@@ -13,10 +13,10 @@ public class MoviesplusApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		Principal principal = new Principal();
-		principal.muestrElMenu();
+		principal.muestraElMenu();
 
-		EjemploStrems ejemploStrems = new EjemploStrems();
-		ejemploStrems.muestraEjemplo();
+//		EjemploStrems ejemploStrems = new EjemploStrems();
+//		ejemploStrems.muestraEjemplo();
 
 	}
 
