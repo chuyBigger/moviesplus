@@ -1,26 +1,50 @@
 package com.aluracursos.moviesplus.modelos;
+import com.aluracursos.moviesplus.service.ConsultaGemini;
+import jakarta.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-
+import java.util.List;
 import java.util.OptionalDouble;
 
+@Entity
+@Table(name = "Series")
+
 public class Serie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
     private String titulo;
     private Integer totalDeTemporadas;
     private Double evaluacion;
     private String poster;
     private String sinopsys;
+    @Enumerated(EnumType.STRING)
     private Categoria genero;
     private String actores;
+
+    @Transient
+    private List<Episodio> episodios;
+
+    public Serie(){
+
+    }
 
     public Serie(DatosSerie datosSerie){
         this.titulo = datosSerie.titulo();
         this.totalDeTemporadas = datosSerie.totalDeTemporadas();
         this.evaluacion = OptionalDouble.of(Double.valueOf(datosSerie.evaluacion())).orElse(0);
         this.poster = datosSerie.poster();
-        this.sinopsys = datosSerie.sinopsys();
+        this.sinopsys = datosSerie.sinopsys(); //ConsultaGemini.obtenerTraduccion(datosSerie.sinopsys());
         this.genero = Categoria.fromString(datosSerie.genero().split(",")[0].trim());
         this.actores = datosSerie.actores();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -81,12 +105,12 @@ public class Serie {
 
     @Override
     public String toString() {
-        return  "Genero=" + genero +
-                ", titulo='" + titulo + '\'' +
-                ", totalDeTemporadas=" + totalDeTemporadas +
-                ", evaluacion=" + evaluacion +
-                ", poster='" + poster + '\'' +
-                ", sinopsys='" + sinopsys + '\'' +
-                ", actores='" + actores;
+        return  "Aqui empiezan los registro unicos de Serie : "+"\n Titulo: " + titulo + '\'' +
+                ", totalDeTemporadas: " + totalDeTemporadas + '\'' +
+                ", evaluacion: " + evaluacion +
+                ", poster: " + poster + '\'' +
+                ", genero: " + genero + '\'' +
+                ", sinopsys: " + sinopsys + '\'' +
+                ", actores: " + actores;
     }
 }

@@ -1,6 +1,7 @@
 package com.aluracursos.moviesplus.principal;
 
 import com.aluracursos.moviesplus.modelos.*;
+import com.aluracursos.moviesplus.repositorio.SerieRepository;
 import com.aluracursos.moviesplus.service.ConsumoApi;
 import com.aluracursos.moviesplus.service.ConvierteDatos;
 
@@ -17,6 +18,11 @@ public class Principal {
     private static final String API_BASE = "https://www.omdbapi.com/?t=";
     private static final String API_KEY = "&apikey=58237260";
     private List<DatosSerie> datosSeries = new ArrayList<>();
+    private SerieRepository repositorio;
+
+    public Principal(SerieRepository repository) {
+        this.repositorio = repository;
+    }
 
     public void muestraElMenu(){
         var opcion = -1;
@@ -83,16 +89,15 @@ public class Principal {
 
     private void buscarSerieWeb(){
         DatosSerie datos = getDatosSerie();
-        datosSeries.add(datos);
+        Serie serie = new Serie(datos);
+        repositorio.save(serie);
+        // datosSeries.add(datos);
         System.out.println(datos);
 
     }
 
     private void mostrarSeriesBuscadas() {
-        List<Serie> series = new ArrayList<>();
-        series = datosSeries.stream()
-                .map(d -> new Serie(d))
-                .collect(Collectors.toList());
+        List<Serie> series = repositorio.findAll();
 
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))

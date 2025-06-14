@@ -134,3 +134,5 @@ public class EjemploStrems {
 //
 //
 //    }
+
+// forma para borrar la base de datos spring.jpa.hibernate.ddl-auto=update
