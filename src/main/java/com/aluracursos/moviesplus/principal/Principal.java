@@ -36,6 +36,10 @@ public class Principal {
                                 1.- Buscar Series
                                 2.- Buscar Episodios
                                 3.- Mostrar Series Buscadas
+                                4.- Buscar Series por titulo
+                                5.- Buscar el top 5
+                                6.- Buscar Series por categoria
+                                7.- Buscar serie min. con 7.8 cal. y max. 3 temp.
                     
                                 0.- Salir;
                     
@@ -56,6 +60,17 @@ public class Principal {
                 case 3:
                     mostrarSeriesBuscadas();
                     break;
+                case 4:
+                    buscarSeriesPorTitulo();
+                    break;
+                case 5:
+                    buscarTop5Series();
+                    break;
+                case 6:
+                    buscarSeriesPorCategoria();
+                    break;
+                case 7:
+                    buscarSeriesCon3TemporadasCalificadasMinimo();
                 case 0:
                     System.out.println("Gracias por usar nuestra app hasta luego...");
                     break;
@@ -121,5 +136,44 @@ public class Principal {
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
+    }
+
+    private void buscarSeriesPorTitulo(){
+        System.out.println("Escribe el nombre de la serie que deseas buscar: ");
+        var serieBuscar = scanner.nextLine();
+
+        Optional<Serie> serieBuscada = repositorio.findByTituloContainsIgnoreCase(serieBuscar);
+
+        if (serieBuscada.isPresent()){
+            System.out.println(" La serie buscada es: "+ serieBuscada.get());
+        }else {
+            System.out.println("Serie NO!!! encontrada");
+        }
+    }
+
+    private void buscarTop5Series(){
+        List<Serie> topSeries = repositorio.findTop5ByOrderByEvaluacionDesc();
+        topSeries.forEach(s -> System.out.println("Nombre: "+s.getTitulo()+" '/' Evaluacion: "+ s.getEvaluacion()));
+    }
+
+    private void buscarSeriesPorCategoria(){
+
+        System.out.println(" Ingresa la categoria de series que deseas buscar :");
+        var seriesPorCategoria = scanner.nextLine();
+        var categoria = Categoria.fromEspanol(seriesPorCategoria);
+        List<Serie> listaSeriesPorCategoria = repositorio.findByGenero(categoria);
+        System.out.println("Las Series de la ctegoria " + seriesPorCategoria);
+        listaSeriesPorCategoria.forEach(System.out::println);
+
+    }
+
+    private void buscarSeriesCon3TemporadasCalificadasMinimo(){
+
+        System.out.println("Vamos a Filtrar las series que tengasn un maximo de 3 temporadas y una calificacion minima de 7.8");
+        var maximoDeTemporadas = 3;
+        var minimoDeCalificacion = 7.8;
+        List<Serie> listaSeriesMaxTemMinCal = repositorio.findByTotalDeTemporadasLessThanEqualAndEvaluacionGreaterThanEqual(t);
+        listaSeriesMaxTemMinCal.forEach(s -> System.out.println("Serie: "+s.getTitulo()+ " evaluacion: "+ s.getEvaluacion()+" total de Temporadas: "+ s.getTotalDeTemporadas()));
+
     }
 }

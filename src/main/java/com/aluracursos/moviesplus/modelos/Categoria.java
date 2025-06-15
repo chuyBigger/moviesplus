@@ -1,16 +1,18 @@
 package com.aluracursos.moviesplus.modelos;
 
 public enum Categoria {
-    ACCION("Action"),
-    AVENTURA("Adventure"),
-    ROMACE("Romance"),
-    COMEDIA("Comedy"),
-    DRAMA("Drama"),
-    CRIMEN("Crime");
+    ACCION("Action", "Acción"),
+    AVENTURA("Adventure","Aventura"),
+    ROMACE("Romance","Romance"),
+    COMEDIA("Comedy","Comedia"),
+    DRAMA("Drama", "Drama"),
+    CRIMEN("Crime","Crimen");
     private String categoriaOmdb;
+    private String categoriaEspanol;
 
-    Categoria(String categoriaOmdb) {
+    Categoria(String categoriaOmdb, String  categoriaEspanol) {
         this.categoriaOmdb = categoriaOmdb;
+        this.categoriaEspanol = categoriaEspanol;
     }
 
     public static Categoria fromString(String text) {
@@ -19,6 +21,15 @@ public enum Categoria {
                 return categoria;
             }
         }
-        throw new IllegalArgumentException("Ninguna ategoria encontrada ..." + text);
+        throw new IllegalArgumentException("Ninguna Categoria encontrada ..." + text);
+    }
+
+    public static Categoria fromEspanol(String text) {
+        for (Categoria categoria : Categoria.values()) {
+            if (categoria.categoriaEspanol.equalsIgnoreCase(text)) {
+                return categoria;
+            }
+        }
+        throw new IllegalArgumentException("Ninguna Categoria encontrada ..." + text);
     }
 }
