@@ -1,4 +1,5 @@
 package com.aluracursos.moviesplus.modelos;
+
 import com.aluracursos.moviesplus.service.ConsultaGemini;
 import jakarta.persistence.*;
 
@@ -22,14 +23,14 @@ public class Serie {
     private Categoria genero;
     private String actores;
 
-    @Transient
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios;
 
-    public Serie(){
+    public Serie() {
 
     }
 
-    public Serie(DatosSerie datosSerie){
+    public Serie(DatosSerie datosSerie) {
         this.titulo = datosSerie.titulo();
         this.totalDeTemporadas = datosSerie.totalDeTemporadas();
         this.evaluacion = OptionalDouble.of(Double.valueOf(datosSerie.evaluacion())).orElse(0);
@@ -37,6 +38,15 @@ public class Serie {
         this.sinopsys = datosSerie.sinopsys(); //ConsultaGemini.obtenerTraduccion(datosSerie.sinopsys());
         this.genero = Categoria.fromString(datosSerie.genero().split(",")[0].trim());
         this.actores = datosSerie.actores();
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
     }
 
     public Long getId() {
@@ -105,12 +115,13 @@ public class Serie {
 
     @Override
     public String toString() {
-        return  "Aqui empiezan los registro unicos de Serie : "+"\n Titulo: " + titulo + '\'' +
+        return "Aqui empiezan los registro unicos de Serie : " + "\n Titulo: " + titulo + '\'' +
                 ", totalDeTemporadas: " + totalDeTemporadas + '\'' +
                 ", evaluacion: " + evaluacion +
                 ", poster: " + poster + '\'' +
                 ", genero: " + genero + '\'' +
                 ", sinopsys: " + sinopsys + '\'' +
-                ", actores: " + actores;
+                ", actores: " + actores +
+                ", episodios: " + episodios;
     }
 }
