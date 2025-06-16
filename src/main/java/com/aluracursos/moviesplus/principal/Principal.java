@@ -21,6 +21,7 @@ public class Principal {
     private List<DatosSerie> datosSeries = new ArrayList<>();
     private SerieRepository repositorio;
     private List<Serie> series = new ArrayList<>();
+    private Optional<Serie> serieBuscada;
 
     public Principal(SerieRepository repository, String apikey) {
         this.repositorio = repository;
@@ -40,6 +41,8 @@ public class Principal {
                                 5.- Buscar el top 5
                                 6.- Buscar Series por categoria
                                 7.- Buscar serie min. con 7.8 cal. y max. 3 temp.
+                                8.- Buscar Espidosio por Titulo. 
+                                9.- Buscar top 5 Episodios por serie
                     
                                 0.- Salir;
                     
@@ -71,6 +74,13 @@ public class Principal {
                     break;
                 case 7:
                     buscarSeriesCon3TemporadasCalificadasMinimo();
+                    break;
+                case 8:
+                    buscarEspisodioPorTitulo();
+                    break;
+                case 9:
+                    buscarTop5Episodios();
+                    break;
                 case 0:
                     System.out.println("Gracias por usar nuestra app hasta luego...");
                     break;
@@ -142,7 +152,7 @@ public class Principal {
         System.out.println("Escribe el nombre de la serie que deseas buscar: ");
         var serieBuscar = scanner.nextLine();
 
-        Optional<Serie> serieBuscada = repositorio.findByTituloContainsIgnoreCase(serieBuscar);
+        serieBuscada = repositorio.findByTituloContainsIgnoreCase(serieBuscar);
 
         if (serieBuscada.isPresent()){
             System.out.println(" La serie buscada es: "+ serieBuscada.get());
@@ -172,8 +182,36 @@ public class Principal {
         System.out.println("Vamos a Filtrar las series que tengasn un maximo de 3 temporadas y una calificacion minima de 7.8");
         var maximoDeTemporadas = 3;
         var minimoDeCalificacion = 7.8;
-        List<Serie> listaSeriesMaxTemMinCal = repositorio.findByTotalDeTemporadasLessThanEqualAndEvaluacionGreaterThanEqual(t);
+        List<Serie> listaSeriesMaxTemMinCal = repositorio.findByTotalDeTemporadasLessThanEqualAndEvaluacionGreaterThanEqual(maximoDeTemporadas, minimoDeCalificacion);
         listaSeriesMaxTemMinCal.forEach(s -> System.out.println("Serie: "+s.getTitulo()+ " evaluacion: "+ s.getEvaluacion()+" total de Temporadas: "+ s.getTotalDeTemporadas()));
+    }
+
+    private void buscarEspisodioPorTitulo(){
+        System.out.println("Ingresa el nombre del Episodio que buscas");
+        var buscarEpisodio = scanner.nextLine();
+        List<Episodio> episodioEncontrados = repositorio.episodiosPorNombre(buscarEpisodio);
+        episodioEncontrados.forEach(e ->
+                System.out.printf("Serie: %s Temporada %s Episodio %S Evaluacion: %s\n",
+                        e.getSerie(), e.getTemporada(), e.getNumeroEpisodio(), e.getEvaluacion())
+        );
 
     }
+
+    private void buscarTop5Episodios(){
+        buscarSeriesPorTitulo();
+        if (serieBuscada.isPresent()){
+            Serie serieEx = serieBuscada.get();
+            List<Episodio> topEpisodioList = repositorio.top5episodios(serieEx);
+            topEpisodioList.forEach(e ->
+                    System.out.printf("Serie: %s - Nombre: %S - Temporada: %s - Episodio: %s - Evaluación: %.1f\n",
+                            e.getSerie().getTitulo(),
+                            e.getTitulo(),
+                            e.getTemporada(),
+                            e.getNumeroEpisodio(),
+                            e.getEvaluacion())
+            );
+        }
+
+    }
+
 }
